@@ -14,7 +14,7 @@ Ganglion is best installed as a standalone app.
 The easiest way of doing this is with [uv](https://docs.astral.sh/uv/):
 
 ```
-uv tool ganglion
+uv tool install ganglion
 ```
 
 You should find the `ganglion` command on your path. Confirm the installation was successful by running:
