@@ -1,0 +1,23 @@
+[server]
+# The base URL where ganglion serves from
+base_url = "http://127.0.0.1:8080"
+# The URL for applications
+app_url_format = "http://127.0.0.1:8080/{account}/{application}"
+# The websocket URL where applications are served from
+app_websocket_url = "ws://127.0.0.1:8080"
+
+[templates]
+# Root directory for templates
+root = "${GANGLION_DATA}/templates"
+
+[static]
+# Local directory where static assets are contained
+root = "${GANGLION_DATA}/static"
+# URL where static assets are served from
+url = "/static/"
+
+[db]
+# sqlalchemy async database URL
+url = "sqlite+aiosqlite:///./ganglion.db"
+# Consider Postgres for production
+#url = "postgresql+asyncpg://postgres:password@localhost/ganglion"

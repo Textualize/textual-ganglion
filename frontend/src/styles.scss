@@ -1,0 +1,14 @@
+$primary-color: white;
+$bg: black;
+h1 {
+  color: $primary-color;
+  background-color: $bg;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+.textual-terminal {
+  width: 100vw;
+  height: 100vh;
+}

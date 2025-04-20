@@ -1,0 +1,198 @@
+---
+version: 1
+packets:
+  - name: "Ping"
+    description: "Request packet data to be returned via a Pong."
+    sender: "both"
+    attributes:
+      - name: "data"
+        type: "bytes"
+        description: "Opaque data."
+
+  - name: "Pong"
+    description: "Response to a Ping packet. The data from Ping should be sent back in the Pong."
+    sender: "both"
+    attributes:
+      - name: "data"
+        type: "bytes"
+        description: "Data received from PING"
+
+  - name: "Log"
+    description: "A message to be written to debug logs. This is a debugging aid, and will be disabled in production."
+    sender: "both"
+    attributes:
+      - name: "message"
+        type: "str"
+        description: "Message to log."
+
+  - name: "Info"
+    description: "Info message to be written in to logs. Unlike Log, these messages will be used in production."
+    sender: "server"
+    attributes:
+      - name: "message"
+        type: "str"
+        description: "Info message"
+
+  - name: DeclareApps
+    description: "Declare the apps exposed."
+    sender: "client"
+    attributes:
+      - name: "apps"
+        type: "list"
+        description: "Apps served by this client."
+
+  - name: SessionOpen
+    description: "Notification sent by a client when an app session was opened"
+    sender: "server"
+    attributes:
+      - name: "session_id"
+        type: "str"
+        description: "Session ID"
+      - name: "app_id"
+        type: "str"
+        description: "Application identity."
+      - name: "application_slug"
+        type: "str"
+        description: "Application slug."
+      - name: "route_key"
+        type: "str"
+        description: "Route key"
+      - name: "width"
+        type: "int"
+        description: "Terminal width."
+      - name: "height"
+        type: "int"
+        description: "Terminal height."
+
+  - name: SessionClose
+    description: "Close an existing app session."
+    sender: "server"
+    attributes:
+      - name: "session_id"
+        type: "str"
+        description: "Session identity"
+      - name: "route_key"
+        type: "str"
+        description: "Route key"
+
+  - name: SessionData
+    description: "Data for a session."
+    sender: "both"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route index."
+      - name: "data"
+        type: "bytes"
+        description: "Data for a remote app"
+
+  - name: RoutePing
+    description: "Session ping"
+    sender: "server"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route index."
+      - name: "data"
+        type: "str"
+        description: "Opaque data."
+
+  - name: RoutePong
+    description: "Session pong"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route index."
+      - name: "data"
+        type: "str"
+        description: "Opaque data."
+
+  - name: NotifyTerminalSize
+    description: "Notify the client that the terminal has change dimensions."
+    sender: "server"
+    attributes:
+      - name: "session_id"
+        type: "str"
+        description: "Session identity."
+      - name: "width"
+        type: "int"
+        description: "Width of the terminal."
+      - name: "height"
+        type: "int"
+        description: "Height of the terminal."
+
+  - name: Focus
+    description: "App has focus."
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+
+  - name: Blur
+    description: "App was blurred."
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+
+  - name: OpenUrl
+    description: "Open a URL in the browser."
+    sender: "client"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+      - name: "url"
+        type: "str"
+        description: "URL to open."
+      - name: "new_tab"
+        type: "bool"
+        description: "Open in new tab."
+
+  - name: BinaryEncodedMessage
+    description: "A message that has been binary encoded."
+    sender: "client"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+      - name: "data"
+        type: "bytes"
+        description: "The binary encoded bytes."
+  
+  - name: DeliverFileStart
+    description: "The app indicates to the server that it is ready to send a file."
+    sender: "client"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+      - name: "delivery_key"
+        type: "str"
+        description: "Delivery key."
+      - name: "file_name"
+        type: "str"
+        description: "File name."
+      - name: "open_method"
+        type: "str"
+        description: "Open method."
+      - name: "mime_type"
+        type: "str"
+        description: "MIME type."
+      - name: "encoding"
+        type: "str"
+        description: "Encoding."
+
+  - name: RequestDeliverChunk
+    description: "The server requests a chunk of a file from the running app."
+    sender: "server"
+    attributes:
+      - name: "route_key"
+        type: "str"
+        description: "Route key."
+      - name: "delivery_key"
+        type: "str"
+        description: "Delivery key."
+      - name: "chunk_size"
+        type: "int"
+        description: "Chunk size."

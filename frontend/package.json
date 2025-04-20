@@ -1,0 +1,45 @@
+{
+  "name": "textual",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rm dist/bundle.js",
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "build-dev": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js,css,scss"
+    }
+  },
+  "dependencies": {
+    "@xterm/addon-canvas": "^0.7.0",
+    "@xterm/addon-clipboard": "^0.1.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-unicode11": "^0.8.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/addon-webgl": "^0.18.0",
+    "@xterm/xterm": "^5.5.0",
+    "lodash": "^4.17.21",
+    "npm-watch": "^0.11.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.7.4",
+    "eslint": "^8.41.0",
+    "lodash-webpack-plugin": "^0.11.6",
+    "prettier": "^2.8.8",
+    "sass": "^1.77.8",
+    "sass-loader": "^13.3.0",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1"
+  }
+}

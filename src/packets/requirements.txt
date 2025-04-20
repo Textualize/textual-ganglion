@@ -1,0 +1,4 @@
+black
+jinja2==3.0.3
+pyyaml==6.0.0
+rich

@@ -1,0 +1,31 @@
+[project]
+name = "ganglion"
+version = "0.1.1"
+description = "Serve multiple Textual apps"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aioconsole>=0.8.1",
+    "aiohttp-jinja2>=1.6",
+    "aiohttp[speedups]>=3.11.17",
+    "aiosqlite>=0.21.0",
+    "alembic>=1.15.2",
+    "asyncpg>=0.30.0",
+    "bcrypt>=4.3.0",
+    "click>=8.1.8",
+    "haversine>=2.9.0",
+    "msgpack>=1.1.0",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.11.3",
+    "rich>=14.0.0",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "textual>=3.1.0",
+    "uvloop>=0.21.0",
+]
+
+[project.scripts]
+ganglion = "ganglion.cli:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

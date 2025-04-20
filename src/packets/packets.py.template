@@ -1,0 +1,176 @@
+"""
+This file is auto-generated from packets.yml and packets.py.template
+
+Time: {{ time }}
+Version: {{ version }}
+
+To regenerate run `make packets.py` (in src directory)
+
+**Do not hand edit.**
+
+
+"""
+from __future__ import annotations
+
+from enum import IntEnum
+from operator import attrgetter
+from typing import ClassVar, Type
+
+import rich.repr
+
+MAX_STRING = 20
+
+
+def abbreviate_repr(input:object) -> str:
+    """Abbreviate any long strings."""
+    if isinstance(input, (bytes, str)) and len(input) > MAX_STRING:        
+        cropped = len(input) - MAX_STRING
+        return f"{input[:MAX_STRING]!r}+{cropped}"
+    return repr(input)
+    
+
+
+class PacketType(IntEnum):
+    """Enumeration of packet types."""
+    # A null packet (never sent).
+    NULL = 0
+
+    {%- for packet in packets %} 
+    # {{ packet.description }}    
+    {{ packet.type }} = {{ packet.id }}  # See {{ packet.name }}()
+    {% endfor %}
+
+
+class Packet(tuple):
+    """Base class for a packet.
+    
+    Should never be sent. Use one of the derived classes.
+    
+    """
+
+    sender: ClassVar[str] = "both"
+    handler_name: ClassVar[str] = ""
+    type: ClassVar[PacketType] = PacketType.NULL
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = []
+    _attribute_count = 0
+    _get_handler = attrgetter("foo")
+    
+
+
+{% for packet in packets %}
+# PacketType.{{ packet.type }} ({{ packet.id }})
+class {{ packet.name }}(Packet):
+    """{{ packet.description }}
+
+    Args:        
+    {%- for attrib in packet.attributes %}
+        {{ attrib.name }} ({{attrib.type }}{% if attrib.default %} optional{% endif %}): {{ attrib.description }}{% if attrib.default %} Defaults to {{ attrib.default.__repr__() }}.{% endif %}
+    {%- endfor %}
+
+    """
+    
+    sender: ClassVar[str] = "{{ packet.sender or "both" }}"
+    """Permitted sender, should be "client", "server", or "both"."""    
+    handler_name: ClassVar[str] = "on_{{ packet.handler_name }}"
+    """Name of the method used to handle this packet."""
+    type: ClassVar[PacketType] = PacketType.{{ packet.type }}
+    """The packet type enumeration."""
+    
+
+    _attributes: ClassVar[list[tuple[str, Type]]] = [
+    {%- for attrib in packet.attributes %}
+        ("{{ attrib.name }}", {{ attrib.type }}),
+    {%- endfor %}
+    ]
+    _attribute_count = {{ packet.attributes|length }}
+    _get_handler = attrgetter("on_{{ packet.handler_name }}")    
+
+    def __new__(cls, {% for attrib in packet.attributes %}{{ attrib.name }}: {{ attrib.type }}{% if attrib.default %}={{ attrib.default.__repr__() }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> "{{ packet.name }}":        
+        return tuple.__new__(
+            cls,    
+            (      
+                PacketType.{{ packet.type }},            
+                {%- for attrib in packet.attributes %}
+                {{ attrib.name }}{% if not loop.last %}, {% endif %}
+                {%- endfor %}
+            ) 
+        )
+
+    @classmethod
+    def build(cls, {% for attrib in packet.attributes %}{{ attrib.name }}: {{ attrib.type }}{% if attrib.default %}={{ attrib.default.__repr__() }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}) -> "{{ packet.name }}":
+        """Build and validate a packet from its attributes."""
+        {%- for attrib in packet.attributes %}
+        if not isinstance({{attrib.name}}, {{attrib.type}}):
+            raise TypeError(f'packets.{{ packet.name }} Type of "{{ attrib.name }}" incorrect; expected {{ attrib.type }}, found {type({{attrib.name }})}')
+        {%- endfor %}
+        return tuple.__new__(
+            cls,    
+            (      
+                PacketType.{{ packet.type }},            
+                {%- for attrib in packet.attributes %}
+                {{ attrib.name }}{% if not loop.last %}, {% endif %}
+                {%- endfor %}
+            ) 
+        )
+
+    def __repr__(self) -> str:
+        _type, {% for attrib in packet.attributes %}{{attrib.name}}{% if not loop.last %}, {% endif %}{% endfor %} = self
+        return f"{{ packet.name }}({% for attrib in packet.attributes %}{abbreviate_repr({{ attrib.name }})}{% if not loop.last %}, {% endif %}{% endfor %})"
+
+    {% if packet.attributes %}
+    def __rich_repr__(self) -> rich.repr.Result:
+        {%- for attrib in packet.attributes %}
+        yield "{{ attrib.name }}", self.{{ attrib.name }}
+        {%- endfor %}
+    {% else %}
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield from ()        
+    {% endif %}
+
+    {% for attrib in packet.attributes %}
+    @property
+    def {{ attrib.name }}(self) -> {{ attrib.type }}:
+        """{{ attrib.description }}"""
+        return self[{{ loop.index0 + 1}}]
+    {% endfor %}    
+{% endfor %}
+
+# A mapping of the packet id on to the packet class
+PACKET_MAP: dict[int, type[Packet]] = {
+    {%- for packet in packets %} 
+    {{ packet.id }}: {{ packet.name }},
+    {%- endfor %}
+}
+
+# A mapping of the packet name on to the packet class
+PACKET_NAME_MAP: dict[str, type[Packet]] = {
+    {%- for packet in packets %} 
+    "{{ packet.name.lower() }}": {{ packet.name }},
+    {%- endfor %}
+}
+
+class Handlers:
+    """Base class for handlers."""
+
+    async def dispatch_packet(self, packet: Packet) -> None:
+        """Dispatch a packet to the appropriate handler.
+
+        Args:
+            packet (Packet): A packet object.
+
+        """
+
+        await packet._get_handler(self)(packet)
+
+    {%- for packet in packets %}
+    async def on_{{ packet.handler_name }}(self, packet: {{ packet.name }}) -> None:
+        """{{ packet.description }}"""
+        await self.on_default(packet)
+    {%- endfor %}
+
+    async def on_default(self, packet: Packet) -> None:
+        """Called when a packet is not handled."""
+
+if __name__ == "__main__":    
+    print("packets.py imported successfully")
