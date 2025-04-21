@@ -1,7 +1,8 @@
 # ganglion
 
-Ganglion is an application which serves [Textual](https://textual.textualize.io/) apps on the web.
+Ganglion is an server which publishes [Textual](https://textual.textualize.io/) apps on the web.
 
+Unlike [textual-serve](https://github.com/Textualize/textual-serve), Ganglion can publish multiple Textual apps running on different machines from a single URL. You could use Ganglion and Textual to create web interfaces to devices running on your machine or network. In effect, turning any device in to a web-enabled device.
 
 ## Compatibility
 
@@ -69,9 +70,9 @@ textual-web -r "python -m textual" -e local
 ## Configuration
 
 You can configure Ganglion via a TOML configuration file.
-The path to this configuration file may be set in the env var `GANGLION_CONFIG`, or with the `--config` in the serve command (and others).
+The path to this configuration file may be set in the env var `GANGLION_CONFIG`, or with the `--config` in the serve command (and others). The switch takes precedence over the environment variable.
 
-Here's the default, internal configuration:
+Here's the default configuration:
 
 ```TOML
 [server]
